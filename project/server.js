@@ -18,10 +18,19 @@ const app = express();
 
 // Security middleware
 app.use(helmet());
+const allowedOrigins = [
+  'http://localhost:5173',
+  'https://piggy-frontend-u5db.onrender.com'
+];
+
 app.use(cors({
-  origin: process.env.CLIENT_URL || 'https://piggy-frontend-u5db.onrender.com',
+  origin: function (origin, callback) {
+    if (!origin || allowedOrigins.includes(origin)) callback(null, true);
+    else callback(new Error('CORS not allowed'));
+  },
   credentials: true
 }));
+
 
 // Rate limiting
 const limiter = rateLimit({
